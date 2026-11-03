@@ -95,4 +95,4 @@ JDK ZIP은 Azul Metadata API가 제공한 SHA-256과 비교합니다. Gradle ZIP
 
 사내 프록시/방화벽이 CRL/OCSP 조회를 막는 경우 Windows curl에서 `CRYPT_E_NO_REVOCATION_CHECK` 오류가 날 수 있어 다운로드에 `--ssl-no-revoke`를 사용합니다. 이는 인증서 폐기 여부 조회만 생략하며, 인증서 신뢰 체인/유효기간 검증을 끄는 `--insecure`와 다릅니다. 회사 보안 정책상 허용되는 경우에만 사용하세요.
 
-JDK 메타데이터 조회 또는 다운로드가 실패하면 프록시/방화벽에서 `api.azul.com`, `cdn.azul.com`, `services.gradle.org` 및 리다이렉트 대상에 접근 가능한지 확인하세요.
+JDK 메타데이터 조회 또는 다운로드가 실패하면 `scripts\01-prepare-jdk8.bat`의 최신 버전을 먼저 `git pull`로 가져왔는지 확인하세요. 메타데이터 URL의 쿼리 구분자는 CMD의 따옴표 안에서 `&`를 그대로 사용해야 합니다. 프록시/방화벽에서 `api.azul.com`, `cdn.azul.com`, `services.gradle.org` 및 리다이렉트 대상에 접근 가능한지 확인하세요.
