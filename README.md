@@ -2,9 +2,7 @@
 
 이 키트는 **CMD 배치 파일만 사용**합니다. PowerShell, Node.js, npm은 사용하지 않습니다.
 
-현재 외부 준비 PC에서 확인된 환경은 Windows 10 x86, Java 8 Runtime입니다. `javac`가 없으므로 JDK가 필요합니다. 아래 준비 스크립트는 Azul Zulu Community의 Java 8 **32비트 JDK**를 메타데이터 API에서 조회하고, 공식 SHA-256과 대조한 뒤 ZIP으로 보관합니다. Gradle 7.0.2 배포본도 별도로 준비합니다.
-
-> 중요: 회사 PC가 64비트 Windows인지, 32비트 Windows인지 확인한 뒤 실행하세요. 이 키트의 JDK 선택은 현재 확인된 `OS: Windows 10 ... x86`에 맞춘 32비트입니다. 다른 아키텍처라면 JDK 다운로드 필터를 바꿔야 합니다.
+현재 외부 준비 PC에서는 Java 8 Runtime은 확인됐지만 `javac`가 없어 JDK가 필요합니다. Gradle 로그의 `OS: Windows 10 ... x86`은 실행 중인 Java의 아키텍처를 나타내며 Windows OS 자체의 비트 수를 확정하지는 않습니다. 따라서 JDK 준비 스크립트는 CMD의 Windows 아키텍처 환경변수를 확인해 32비트 Windows에는 i686 JDK, 64비트 Windows에는 x64 JDK를 선택합니다. Azul Zulu Community의 Java 8 JDK 메타데이터에서 다운로드 URL과 공식 SHA-256을 조회합니다.
 
 ## 폴더 구성
 
@@ -36,7 +34,7 @@ scripts\04-verify-environment.bat
 
 준비 과정은 다음과 같습니다.
 
-1. Azul Metadata API에서 Windows x86 Java 8 JDK ZIP의 다운로드 URL과 SHA-256 조회
+1. Windows 아키텍처를 감지한 뒤 Azul Metadata API에서 알맞은 Java 8 JDK ZIP의 다운로드 URL과 SHA-256 조회
 2. JDK ZIP 다운로드 및 공식 메타데이터의 SHA-256 대조
 3. JDK 압축 해제 후 `java -version`, `javac -version` 확인
 4. Gradle 7.0.2 ZIP 확인 및 압축 해제
