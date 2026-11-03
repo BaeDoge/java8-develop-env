@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$KitRoot = (Split-Path -Parent $PSScriptRoot),
     [int]$MaxRetries = 5,
@@ -45,6 +45,7 @@ if ((Test-Path $ZipPath) -and ((Get-Item $ZipPath).Length -gt 10MB)) {
             if (Test-Path $TempPath) { Remove-Item $TempPath -Force }
 
             & curl.exe --fail --location --show-error `
+                --ssl-no-revoke `
                 --connect-timeout 45 `
                 --max-time $TimeoutSeconds `
                 --retry 2 `
@@ -75,6 +76,9 @@ if ((Test-Path $ZipPath) -and ((Get-Item $ZipPath).Length -gt 10MB)) {
             $request = [System.Net.HttpWebRequest]::Create($Url)
             $request.Method = "GET"
             $request.AllowAutoRedirect = $true
+            # 사내망에서 CRL/OCSP 확인 경로가 차단된 경우의 대체 경로.
+            # 서버 인증서의 유효기간/신뢰 체인 검증은 유지하고 폐기 여부 조회만 생략합니다.
+            $request.CheckCertificateRevocationList = $false
             $request.Timeout = $TimeoutSeconds * 1000
             $request.ReadWriteTimeout = $TimeoutSeconds * 1000
             $request.UserAgent = "Gradle-Offline-Kit/1.0"
