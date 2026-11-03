@@ -18,6 +18,13 @@ if errorlevel 1 goto :failed
 call "scripts\03-register-environment.bat"
 if errorlevel 1 goto :failed
 
+rem setx writes persistent values but does not update this CMD process.
+set "JAVA_HOME=%KIT_ROOT%\tools\jdk8"
+for /d %%D in ("%KIT_ROOT%\tools\jdk8\*") do if exist "%%~fD\bin\javac.exe" set "JAVA_HOME=%%~fD"
+set "GRADLE_HOME=%KIT_ROOT%\tools\gradle-7.0.2"
+set "GRADLE_USER_HOME=%KIT_ROOT%\cache\gradle"
+set "PATH=%JAVA_HOME%\bin;%GRADLE_HOME%\bin;%PATH%"
+
 call "scripts\04-verify-environment.bat"
 if errorlevel 1 goto :failed
 
