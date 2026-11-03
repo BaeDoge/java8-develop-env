@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [string]$KitRoot = (Split-Path -Parent $PSScriptRoot),
     [int]$MaxRetries = 5,
@@ -20,7 +20,10 @@ New-Item -ItemType Directory -Force -Path $DistDir, $ToolsDir | Out-Null
 Write-Host "[1/5] Java 확인"
 $javaCmd = Get-Command java -ErrorAction SilentlyContinue
 if ($javaCmd) {
-    java -version 2>&1 | ForEach-Object { Write-Host $_ }
+    # java -version은 버전 정보를 stderr로 출력합니다.
+    # Windows PowerShell 5에서는 이를 NativeCommandError로 처리할 수 있으므로
+    # cmd.exe 내부에서 stderr를 stdout으로 합쳐 안전하게 표시합니다.
+    & $env:ComSpec /d /c "java -version 2>&1" | ForEach-Object { Write-Host $_ }
 } else {
     Write-Warning "Java를 찾지 못했습니다. 다운로드는 계속합니다. Gradle 실행 전 승인된 JDK 8이 필요합니다."
 }
