@@ -12,7 +12,7 @@ if defined PROCESSOR_ARCHITEW6432 set "JDK_ARCH=x64"
 set "JDK_ZIP=%DIST_DIR%\zulu8-windows-%JDK_ARCH%-jdk.zip"
 set "JDK_TEMP=%JDK_ZIP%.download"
 set "META=%DIST_DIR%\zulu8-windows-%JDK_ARCH%-jdk.json"
-set "META_URL=https://api.azul.com/metadata/v1/zulu/packages/?java_version=8^&os=windows^&arch=%JDK_ARCH%^&java_package_type=jdk^&archive_type=zip^&release_status=ga^&availability_types=CA^&latest=true^&include_fields=download_url,sha256_hash^&page_size=1"
+set "META_URL=https://api.azul.com/metadata/v1/zulu/packages/?java_version=8&os=windows&arch=%JDK_ARCH%&java_package_type=jdk&archive_type=zip&release_status=ga&availability_types=CA&latest=true&include_fields=download_url,sha256_hash&page_size=1"
 
 echo [JDK 1/5] Checking CMD download and archive tools
 where curl.exe >nul 2>nul
