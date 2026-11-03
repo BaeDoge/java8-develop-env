@@ -30,7 +30,8 @@ if errorlevel 1 goto :failed
 
 echo.
 echo Setup completed.
-echo Close this CMD window and open a new CMD window to use the
+echo Add %%JAVA_HOME%%\bin and %%GRADLE_HOME%%\bin to your user Path first.
+echo Then close this CMD window and open a new CMD window to use the
 echo permanently registered environment variables everywhere.
 popd
 exit /b 0
