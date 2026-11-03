@@ -147,19 +147,36 @@ Set-Content -Path "$ZipPath.sha256" -Value "$Hash  $ZipName" -Encoding ASCII
 Write-Host "다운로드 파일 SHA-256: $Hash"
 Write-Host "참고: 이 값은 다운로드 후 계산한 로컬 해시이며, 공식 배포처 해시와 대조한 인증값은 아닙니다."
 
-if (Test-Path $InstallDir) {
-    Remove-Item -Recurse -Force $InstallDir
-}
+# 이전 실행에서 남은 임시 폴더를 정리합니다.
 $tempDir = Join-Path $ToolsDir "_extract"
-if (Test-Path $tempDir) { Remove-Item -Recurse -Force $tempDir }
-Expand-Archive -Path $ZipPath -DestinationPath $tempDir -Force
-
-$extracted = Join-Path $tempDir "gradle-$Version"
-if (-not (Test-Path $extracted)) {
-    throw "압축 해제 결과에서 gradle-$Version 폴더를 찾지 못했습니다."
+if (Test-Path $tempDir) {
+    try {
+        Remove-Item -LiteralPath $tempDir -Recurse -Force -ErrorAction Stop
+    } catch {
+        throw "이전 임시 압축 해제 폴더를 삭제할 수 없습니다. Gradle 관련 프로세스를 종료하고 폴더를 직접 삭제한 뒤 재실행하세요: $tempDir / $($_.Exception.Message)"
+    }
 }
-Move-Item -Path $extracted -Destination $InstallDir
-Remove-Item -Recurse -Force $tempDir
+
+# 기존 설치 폴더가 있으면 교체합니다.
+if (Test-Path $InstallDir) {
+    try {
+        Remove-Item -LiteralPath $InstallDir -Recurse -Force -ErrorAction Stop
+    } catch {
+        throw "기존 Gradle 폴더를 삭제할 수 없습니다. gradle/java 프로세스 또는 백신이 파일을 사용 중인지 확인하고 폴더를 직접 삭제한 뒤 재실행하세요: $InstallDir / $($_.Exception.Message)"
+    }
+}
+
+# ZIP 내부 최상위 폴더가 gradle-7.0.2이므로 tools 폴더에 바로 풉니다.
+# 별도 임시 폴더에서 Move-Item으로 디렉터리를 이동할 때 발생하는 Windows 권한/잠금 문제를 피합니다.
+try {
+    Expand-Archive -LiteralPath $ZipPath -DestinationPath $ToolsDir -Force -ErrorAction Stop
+} catch {
+    throw "Gradle 압축 해제에 실패했습니다. tools 폴더 쓰기 권한과 디스크 공간을 확인하세요: $($_.Exception.Message)"
+}
+
+if (-not (Test-Path (Join-Path $InstallDir "bin\gradle.bat"))) {
+    throw "압축 해제 후 Gradle 실행 파일을 찾지 못했습니다: $(Join-Path $InstallDir 'bin\gradle.bat')"
+}
 
 Write-Host ""
 Write-Host "Gradle 배포본 준비 완료: $InstallDir"
