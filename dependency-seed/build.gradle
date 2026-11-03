@@ -1,0 +1,87 @@
+/*
+ * Dependency seed for the takephoto-ls application.
+ *
+ * Target environment:
+ * - JDK 8
+ * - Gradle 7.0.2
+ * - Spring Boot 2.7.18
+ *
+ * This project resolves public Maven/Gradle dependencies only.
+ * Do not add company source code, credentials, internal repository URLs,
+ * or private JAR files to this repository.
+ */
+
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot' version '2.7.18'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'io.freefair.lombok' version '4.1.6'
+}
+
+group = 'com.kbstar.takephoto.ls'
+version = '0.1.12'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// Spring Security 5.8.16 is built against Spring Framework 5.3.39.
+ext['spring-framework.version'] = '5.3.39'
+ext['spring-security.version'] = '5.8.16'
+
+// Let Spring Boot 2.7.18 manage Tomcat and Logback versions.
+// Logback 1.6.x is intentionally not forced because it is not Java 8 compatible.
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Framework: version managed by spring-framework.version above.
+    implementation 'org.springframework:spring-beans'
+    implementation 'org.springframework:spring-aop'
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-core'
+    implementation 'org.springframework:spring-expression'
+    implementation 'org.springframework:spring-webmvc'
+    implementation 'org.springframework:spring-web'
+
+    // Spring Boot starters: version managed by the Spring Boot plugin.
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.67'
+    implementation 'org.webjars:webjars-locator-core:0.45'
+    implementation 'com.cedarsoftware:json-io:4.12.0'
+
+    implementation 'com.google.code.gson:gson'
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    implementation 'commons-io:commons-io:2.6'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+
+    implementation 'javax.validation:validation-api'
+    implementation 'org.codehaus.janino:janino'
+}
+
+/*
+ * Resolve every resolvable project configuration so that both compile-time
+ * and runtime artifacts are downloaded into the configured Gradle user cache.
+ * Gradle plugins declared in the plugins block are resolved during
+ * configuration, before this task executes.
+ */
+tasks.register('resolveAllDependencies') {
+    group = 'dependency preparation'
+    description = 'Downloads artifacts for all resolvable project configurations.'
+
+    doLast {
+        configurations.findAll { it.canBeResolved }.each { configuration ->
+            println "Resolving configuration: ${configuration.name}"
+            configuration.resolve()
+        }
+    }
+}
