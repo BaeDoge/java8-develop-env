@@ -8,7 +8,7 @@ set "JDK_DIR=%TOOLS_DIR%\jdk8"
 set "JDK_ZIP=%DIST_DIR%\zulu8-windows-x86-jdk.zip"
 set "JDK_TEMP=%JDK_ZIP%.download"
 set "META=%DIST_DIR%\zulu8-windows-x86-jdk.json"
-set "META_URL=https://api.azul.com/metadata/v1/zulu/packages/?java_version=8^&os=windows^&arch=xi686^&java_package_type=jdk^&archive_type=zip^&release_status=ga^&availability_types=CA^&latest=true^&include_fields=download_url,sha256_hash^&page_size=1"
+set "META_URL=https://api.azul.com/metadata/v1/zulu/packages/?java_version=8^&os=windows^&arch=i686^&java_package_type=jdk^&archive_type=zip^&release_status=ga^&availability_types=CA^&latest=true^&include_fields=download_url,sha256_hash^&page_size=1"
 
 echo [JDK 1/5] Checking CMD download and archive tools
 where curl.exe >nul 2>nul
@@ -47,7 +47,7 @@ if errorlevel 1 (
 
 set "JDK_URL="
 set "EXPECTED_SHA="
-for /f "tokens=2,* delims=:" %%A in ('findstr /i "download_url" "%META%"') do (
+for /f "tokens=1,* delims=:" %%A in ('findstr /i "download_url" "%META%"') do (
   set "JDK_URL=%%B"
   goto :url_found
 )
