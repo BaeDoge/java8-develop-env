@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [string]$KitRoot = (Split-Path -Parent $PSScriptRoot),
     [string]$JavaHome = $env:JAVA_HOME
@@ -22,6 +22,9 @@ $env:PATH = "$(Join-Path $JavaHome 'bin');$env:PATH"
 $env:GRADLE_USER_HOME = Join-Path $KitRoot "cache\gradle"
 
 Write-Host "Java:"
-& (Join-Path $JavaHome "bin\java.exe") -version
+# java -version은 stderr로 출력되므로 cmd.exe에서 stdout으로 합쳐 표시합니다.
+$JavaExe = Join-Path $JavaHome "bin\java.exe"
+& $env:ComSpec /d /c "`"$JavaExe`" -version 2>&1" | ForEach-Object { Write-Host $_ }
+
 Write-Host "`nGradle:"
 & $GradleBat --version
