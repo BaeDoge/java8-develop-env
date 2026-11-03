@@ -127,12 +127,19 @@ $ZipPath
 
 Write-Host "[5/5] ZIP 확인 및 압축 해제"
 try {
+    # Windows PowerShell 5에서는 ZipFile 어셈블리가 자동 로드되지 않을 수 있습니다.
+    Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction Stop
     $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
-    $entryCount = $archive.Entries.Count
-    $archive.Dispose()
-    if ($entryCount -lt 10) { throw "ZIP 내부 파일 수가 비정상적으로 적습니다: $entryCount" }
+    try {
+        $entryCount = $archive.Entries.Count
+    } finally {
+        $archive.Dispose()
+    }
+    if ($entryCount -lt 10) {
+        throw "ZIP 내부 파일 수가 비정상적으로 적습니다: $entryCount"
+    }
 } catch {
-    throw "다운로드 파일이 정상 ZIP이 아닙니다. 파일을 삭제하고 다시 다운로드하세요. $($_.Exception.Message)"
+    throw "ZIP 검사에 실패했습니다. 파일 크기와 압축 파일 무결성을 확인하세요. $($_.Exception.Message)"
 }
 
 $Hash = (Get-FileHash -Algorithm SHA256 -Path $ZipPath).Hash.ToLower()
