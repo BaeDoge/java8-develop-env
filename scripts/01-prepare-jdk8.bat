@@ -51,25 +51,21 @@ if errorlevel 1 (
   exit /b 1
 )
 
+set "PARSED_META=%META%.parsed"
 set "JDK_URL="
 set "EXPECTED_SHA="
-for /f "tokens=1,* delims=:" %%A in ('findstr /i "download_url" "%META%"') do (
-  set "JDK_URL=%%B"
-  goto :url_found
+echo [JDK 2b/5] Parsing JSON metadata with built-in Windows Script Host
+cscript.exe //nologo "%~dp0parse-azul-metadata.js" "%META%" > "%PARSED_META%"
+if errorlevel 1 (
+  echo ERROR: Could not parse Azul JSON metadata.
+  type "%META%"
+  exit /b 1
 )
-:url_found
-for /f "tokens=1,* delims=:" %%A in ('findstr /i "sha256_hash" "%META%"') do (
+for /f "usebackq tokens=1,2 delims=|" %%A in ("%PARSED_META%") do (
+  set "JDK_URL=%%A"
   set "EXPECTED_SHA=%%B"
-  goto :hash_found
 )
-:hash_found
-set "JDK_URL=!JDK_URL: =!"
-set "JDK_URL=!JDK_URL:"=!"
-set "JDK_URL=!JDK_URL:,=!"
-set "EXPECTED_SHA=!EXPECTED_SHA: =!"
-set "EXPECTED_SHA=!EXPECTED_SHA:"=!"
-set "EXPECTED_SHA=!EXPECTED_SHA:,=!"
-
+del /q "%PARSED_META%" >nul 2>nul
 if not defined JDK_URL (
   echo ERROR: No JDK download URL was returned by Azul metadata API.
   type "%META%"
