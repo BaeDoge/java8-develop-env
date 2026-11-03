@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$KitRoot = (Split-Path -Parent $PSScriptRoot),
     [string]$JavaHome = $env:JAVA_HOME
