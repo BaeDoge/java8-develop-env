@@ -5,10 +5,14 @@ for %%I in ("%KIT_ROOT%") do set "KIT_ROOT=%%~fI"
 set "TOOLS_DIR=%KIT_ROOT%\tools"
 set "DIST_DIR=%TOOLS_DIR%\distributions"
 set "JDK_DIR=%TOOLS_DIR%\jdk8"
-set "JDK_ZIP=%DIST_DIR%\zulu8-windows-x86-jdk.zip"
+set "JDK_ARCH=i686"
+if /i "%PROCESSOR_ARCHITECTURE%"=="AMD64" set "JDK_ARCH=x64"
+if /i "%PROCESSOR_ARCHITECTURE%"=="ARM64" set "JDK_ARCH=x64"
+if defined PROCESSOR_ARCHITEW6432 set "JDK_ARCH=x64"
+set "JDK_ZIP=%DIST_DIR%\zulu8-windows-%JDK_ARCH%-jdk.zip"
 set "JDK_TEMP=%JDK_ZIP%.download"
-set "META=%DIST_DIR%\zulu8-windows-x86-jdk.json"
-set "META_URL=https://api.azul.com/metadata/v1/zulu/packages/?java_version=8^&os=windows^&arch=i686^&java_package_type=jdk^&archive_type=zip^&release_status=ga^&availability_types=CA^&latest=true^&include_fields=download_url,sha256_hash^&page_size=1"
+set "META=%DIST_DIR%\zulu8-windows-%JDK_ARCH%-jdk.json"
+set "META_URL=https://api.azul.com/metadata/v1/zulu/packages/?java_version=8^&os=windows^&arch=%JDK_ARCH%^&java_package_type=jdk^&archive_type=zip^&release_status=ga^&availability_types=CA^&latest=true^&include_fields=download_url,sha256_hash^&page_size=1"
 
 echo [JDK 1/5] Checking CMD download and archive tools
 where curl.exe >nul 2>nul
@@ -38,7 +42,9 @@ if exist "%JDK_DIR%" (
   )
 )
 
-echo [JDK 2/5] Retrieving the latest Azul Zulu Java 8 x86 JDK package metadata
+echo Windows process architecture: %PROCESSOR_ARCHITECTURE%
+echo Selected JDK architecture: %JDK_ARCH%
+echo [JDK 2/5] Retrieving the latest Azul Zulu Java 8 JDK package metadata
 curl.exe --fail --location --show-error --ssl-no-revoke --connect-timeout 45 --max-time 120 --retry 3 --retry-delay 3 --output "%META%" "%META_URL%"
 if errorlevel 1 (
   echo ERROR: Could not retrieve JDK metadata from api.azul.com.
