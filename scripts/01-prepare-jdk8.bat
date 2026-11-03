@@ -52,7 +52,7 @@ for /f "tokens=1,* delims=:" %%A in ('findstr /i "download_url" "%META%"') do (
   goto :url_found
 )
 :url_found
-for /f "tokens=2,* delims=:" %%A in ('findstr /i "sha256_hash" "%META%"') do (
+for /f "tokens=1,* delims=:" %%A in ('findstr /i "sha256_hash" "%META%"') do (
   set "EXPECTED_SHA=%%B"
   goto :hash_found
 )
